@@ -5,23 +5,40 @@ Construct for creating a random SSM Parameter Store SecureString.  The value doe
 Example usage:
 ```typescript
 import * as cdk from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { RandomSecureString } from `aws-cdk-ssm-random-securestring`;
 
-class MyConstruct extends Construct {
-
+class MyStack1 extends cdk.Stack {
     constructor(scope, id, props) {
         super(scope, id);
 
         // creates a length 32 value that should work as an RDS password
-        new RandomSecureString(stack, 'TestRandomSecureString1', {
+        const rss1 = new RandomSecureString(stack, 'TestRandomSecureString1', {
             Name: '/test/randomSecureString1'
         });
 
         // creates a length 10 value from the specified characters
-        new RandomSecureString(stack, 'TestRandomSecureString1', {
-            Name: '/test/randomSecureString32',
+        const rss2 = new RandomSecureString(stack, 'TestRandomSecureString2', {
+            Name: '/test/randomSecureString2',
             chars: 'abc123!',
             length: 10
+        });
+
+        // the generated string can be used in other constructs: rss2.value
+        // Be careful that it doesn't end up in the template or logs!
+    }
+}
+
+class MyStack2 extends cdk.Stack {
+    constructor(scope, id, props) {
+        super(scope, id);
+
+        // Other stacks could also use the value anywhere a SecretValue is required:
+        new cd.aws_rds.DatabaseInstance(this, 'mydb', {
+            credentials: {
+                username: 'dbguy',
+                password: cdk.SecretValue.ssmSecure('/test/randomSecureString2');
+            }
         });
     }
 }

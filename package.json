@@ -1,6 +1,6 @@
 {
   "name": "aws-cdk-ssm-random-securestring",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Construct for creating a random SSM Parameter Store SecureString",
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
