@@ -7,9 +7,15 @@ import {
     type CdkCustomResourceResponse
 } from 'aws-lambda';
 import {
+    type UnvaluedPutParameterRequest,
     type RandomStringProps,
-    type RandomSecureStringProps
 } from './RandomSecureString'
+
+type RandomSecureStringHandlerEventResourceProps =
+    UnvaluedPutParameterRequest & Required<RandomStringProps> & {
+        ServiceToken: string;
+        Type?: 'SecureString';
+    }
 
 let ssm: AWS.SSM;
 
@@ -47,21 +53,20 @@ export const onEvent: AsyncHandler<CdkCustomResourceHandler> = async (
     }
 
     // Create or Update
-    const props  = event.ResourceProperties as unknown as RandomSecureStringProps;
-    const { length, chars } = props as Required<RandomStringProps>;
-    delete props.length;
-    delete props.chars;
+    const { length, chars, ServiceToken:_, ...ppProps } =
+        event.ResourceProperties as RandomSecureStringHandlerEventResourceProps;
+    ppProps.Type = 'SecureString';
 
     const Value = Array.from(crypto.randomFillSync(new Uint32Array(length)))
         .map((x) => chars[x % chars.length])
         .join('');
 
-    await ssm.putParameter({ Value, ...props }).promise();
+    await ssm.putParameter({ Value, ...ppProps }).promise();
 
-    console.log(`wrote SSM parameter '${props.Name}' with new random value`);
+    console.log(`wrote SSM parameter '${ppProps.Name}' with new random value`);
 
     return {
-        PhysicalResourceId: props.Name,
+        PhysicalResourceId: ppProps.Name,
         NoEcho: true,
         Data: { Value }
     };

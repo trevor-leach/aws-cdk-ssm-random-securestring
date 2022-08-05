@@ -12,7 +12,7 @@ describe('RandomSecureString', () => {
         const app = new cdk.App();
         const stack = new cdk.Stack(app, 'TestStack');
 
-        new RandomSecureString(stack, 'TestRandomSecureString1', {
+        const rss1 = new RandomSecureString(stack, 'TestRandomSecureString1', {
             Name: '/test/randomSecureString1',
             chars: 'abc123!'
         });
@@ -38,5 +38,6 @@ describe('RandomSecureString', () => {
 
         // console.log(template.findResources('Custom::RandomSecureString'));
         // console.log(template.findResources('AWS::Lambda::Function'));
+        // console.log(rss1.value);
     });
 });

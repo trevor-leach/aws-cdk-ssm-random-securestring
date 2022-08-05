@@ -29,7 +29,7 @@ export type RandomStringProps = {
     chars?: string
 };
 
-export type UnvaluedPutParameterRequest = Omit<SSM.Types.PutParameterRequest, 'Value'>;
+export type UnvaluedPutParameterRequest = Omit<SSM.Types.PutParameterRequest, 'Value' | 'Type'>;
 export type RandomSecureStringProps = UnvaluedPutParameterRequest & RandomStringProps;
 
 export class RandomSecureString extends Construct {
