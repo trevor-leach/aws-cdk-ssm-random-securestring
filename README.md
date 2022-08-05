@@ -24,8 +24,13 @@ class MyStack1 extends cdk.Stack {
             length: 10
         });
 
-        // the generated string can be used in other constructs: rss2.value
-        // Be careful that it doesn't end up in the template or logs!
+        // the generated string is exposed as a resource attribute:
+        new cd.aws_rds.DatabaseInstance(this, 'mydb1', {
+            credentials: {
+                username: 'dbguy',
+                password: cdk.SecretValue.resourceAttribute(rss1.value);
+            }
+        });
     }
 }
 
@@ -34,7 +39,7 @@ class MyStack2 extends cdk.Stack {
         super(scope, id);
 
         // Other stacks could also use the value anywhere a SecretValue is required:
-        new cd.aws_rds.DatabaseInstance(this, 'mydb', {
+        new cd.aws_rds.DatabaseInstance(this, 'mydb2', {
             credentials: {
                 username: 'dbguy',
                 password: cdk.SecretValue.ssmSecure('/test/randomSecureString2');

@@ -48,7 +48,11 @@ export class RandomSecureString extends Construct {
 
     private readonly customResource: CustomResource;
 
-    /** The generated value that was stored in the SSM Parameter Store */
+    /**
+     * The generated value that was stored in the SSM Parameter Store.
+     *
+     * @returns — a token for Fn::GetAtt encoded as a string.
+     **/
     public get value() {
         return this.customResource.getAttString('Value');
     }
@@ -62,7 +66,7 @@ export class RandomSecureString extends Construct {
         const onEventHandler = new lambda.SingletonFunction(this, `${id}-handler`, {
             uuid: '84d03fee-4028-4fdd-aa73-af04171f6474',
             lambdaPurpose: 'RandomSecureStringHandler',
-            code: lambda.Code.fromAsset(path.dirname(__dirname)),
+            code: lambda.Code.fromAsset(__dirname),
             handler: 'RandomSecureStringHandler.onEvent',
             timeout: Duration.seconds(300),
             runtime: lambda.Runtime.NODEJS_14_X,
